@@ -1,0 +1,166 @@
+---
+title: "DATA_608_HW2"
+author: "Ahsanul Choudhury"
+date: "September 21, 2017"
+output:
+  html_document:
+     theme: cerulean
+     toc: true
+     toc_float:
+       collapsed: false
+       smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Load Libraries
+
+```{r load_libraries, echo=TRUE, , results=FALSE, warning=FALSE}
+if (!require('dplyr')) install.packages('dplyr')
+if (!require('ggplot2')) install.packages('ggplot2')
+if (!require('bigvis')) install.packages('bigvis')
+```
+### Plot 1
+
+**1. After a few building collapses, the City of New York is going to begin investigating older buildings for safety. However, the city has a limited number of inspectors, and wants to find a 'cut-off' date before most city buildings were constructed. Build a graph to help the city determine when most buildings were constructed. Is there anything in the results that cause you to question the accuracy of the data? (note: only look at buildings built since 1850)**
+
+
+```{r load_data, echo=TRUE, warning=FALSE}
+
+this_dir <- function(directory)
+setwd( file.path(getwd(), directory) )
+
+bk <- read.csv('BK.csv', header=TRUE) # Brooklyn
+bx <- read.csv('BX.csv', header=TRUE) # The Bronx
+mn <- read.csv('Mn.csv', header=TRUE) # Manhattan
+qn <- read.csv('QN.csv', header=TRUE) # Queens
+si <- read.csv('SI.csv', header=TRUE) # Statan Island
+
+
+# Cobine all .csv to a single file
+
+all_PLUTO_data <- bind_rows(bk, bx, mn, qn, si)
+
+
+write.csv(all_PLUTO_data, file = "all_PLUTO_data")
+
+# Get column names
+
+names(all_PLUTO_data)
+
+
+built_since_1850 <- all_PLUTO_data %>%
+  select(YearBuilt) %>%
+  filter(YearBuilt >= 1850, YearBuilt < 2016)
+
+# Summary data
+
+summary(built_since_1850)
+
+```
+
+
+From the summary we can see the YearBuilt starts from 0 and goes all the way upto year 2040 makes us question the integrity of the data, since the project requires us to start from year 1850, it will eliminate 0 values. We will also take remove any data that show YearBuilt above 2016.
+
+
+```{r plot_1, echo=TRUE}
+# Bigvis condense
+
+c_built_since_1850<- condense(bin(built_since_1850$YearBuilt, 5)) 
+
+
+c_built_since_1850 <- na.omit(c_built_since_1850)
+cut_off = (median(c_built_since_1850$built_since_1850.YearBuilt))
+
+plot_1 <- autoplot(c_built_since_1850) +
+  labs(title = "Numbers of Building Constructed by Year",
+       x = "Years",
+       y = "Count") +
+  geom_vline(aes(xintercept = cut_off),
+             color = "red", linetype="dashed")+
+  annotate("text", x = 1942, y = 90000, label = cut_off, color="red")
+  
+
+plot_1
+
+ggsave("plot_1.png")
+
+```
+
+
+The cut off year will be 1934.5 which is the median.
+
+***
+
+
+### Plot 2
+
+
+**2. The city is particularly worried about buildings that were unusually tall when they were built, since best-practices for safety hadn't yet been determined. Create a graph that shows how many buildings of a certain number of floors were built in each year (note: you may want to use a log scale for the number of buildings). It should be clear when 20-story buildings, 30-story buildings, and 40-story buildings were first built in large numbers.**
+
+
+
+```{r plot_2, echo=TRUE}
+number_of_floors <- all_PLUTO_data %>%
+  filter(YearBuilt >= 1850, YearBuilt < 2016, NumFloors >= 20) %>%
+  select(YearBuilt, NumFloors)
+
+
+c_number_of_floors <-condense(bin(number_of_floors$YearBuilt, 1), bin(number_of_floors$NumFloors, 10))
+
+plot_2 <- autoplot(c_number_of_floors) +
+  labs(title="Numbers of Building by Numbers of Floors by Year Built", 
+         y="Year Built", 
+         x="Number of Floors")
+plot_2
+
+
+ggsave("plot_2.png")
+```
+
+
+***
+
+
+### Plot 3
+
+**3. Your boss suspects that buildings constructed during the US's involvement in World War II (1941-1945) are more poorly constructed than those before and after the way due to the high cost of materials during those years. She thinks that, if you calculate assessed value per floor, you will see lower values for buildings at that time vs before or after. Construct a chart/graph to see if she's right.**
+
+
+```{r plot_3, echo=TRUE}
+value_floor <- all_PLUTO_data %>%
+  filter(YearBuilt >= 1850, YearBuilt < 2016, NumFloors > 0) %>%
+  mutate(avpf = round(AssessTot/NumFloors,0)/1000) %>%
+  select(YearBuilt, avpf)
+
+c_value_floor <-  condense(bin(value_floor$YearBuilt,5), z =value_floor$avpf)
+
+plot_3 <- autoplot(c_value_floor) +
+  labs(title = "Assesed Value per Floor",
+       y = "Mean value in 1k",
+       x = "Year")
+
+plot_3
+
+ggsave("plot_3.png")
+```
+
+**Zoomed**
+
+```{r plot_3zoomed, echo=TRUE}
+c_value_floor_zoomed <-  condense(bin(value_floor$YearBuilt,1), z =value_floor$avpf) 
+
+plot_3zoomed <- autoplot(c_value_floor_zoomed)+
+  xlim(1930,1965) +
+  labs(title = "Assesed Value per Floor",
+       y = "Mean value in 1k",
+       x = "Year")
+plot_3zoomed
+
+ggsave("plot_3zoomed.png")
+```
+
+There doesn't seem to be any evidence to support lower assessed values per floor for the buildings constructed during World War II.
