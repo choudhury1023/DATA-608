@@ -1,0 +1,100 @@
+<html>
+<head><title>DATA 608 HW5</title></head>
+
+<body>
+
+<h1>DATA 608 HW5</h1>
+<h2>Ahsanul Choudhury</h2>
+<h3>Beginner</h3>
+
+<script type="text/javascript">
+
+document.write('<p><b>Create a function to reverse any word that you type in. This can be typed into either an input box or an alert box, and then print the result in a box or on the webpage.</b></p><br>');
+</script>
+
+<script type="text/javascript">
+
+document.write('Please enter the word to reverse in the box and click "Reverse" button <br>');
+
+function getreverse(s){
+  var o = '';
+  for (var i = s.length - 1; i >= 0; i--)
+    o += s[i];
+    str = o + ' is the reverse of ' + s;
+  return str;
+};
+function result(){
+    var t = document.getElementById('rev');
+    t.innerHTML = getreverse(document.showReverse.word.value);
+};
+</script>
+
+<p>
+<form name="showReverse">
+    <input name="word" type="string" size="8">
+    <input type="button" value="Reverse" onClick="result();">
+</form>
+</p>
+
+<div id="rev"></div>
+
+<br>
+<br>
+<br>
+
+<script type="text/javascript">
+
+document.write('<p><b>Create a function that takes an input number, and prints a table with the first 20 multiples ofthe number, in order 5x4</b></p><br>')
+
+</script>
+
+<script type="text/javascript">
+
+document.write('Please enter a number to see first 20 multiples <br>');
+
+function multiples(num){
+    array = [];
+    for (i = 1; i <= num; i++) {array.push(document.showMultiple.numIn.value * (1 * i))};
+    return array
+}
+
+function multipleTable(inputArray){
+  var elements = inputArray.length;
+  var showHTML = '<table>';
+  for (i = 0; i < elements; i++){
+        if (i % 4 ==0){showHTML= showHTML +'<tr>'};
+        showHTML = showHTML + '<td>'+ inputArray[i]+ '</td>';
+        if (i % 4 == 3){showHTML = showHTML +'</tr>'};
+    };
+    showHTML = showHTML + '</table>';
+    return showHTML
+};
+function result1(){
+    var t = document.getElementById('multiShow');
+    t.style.border = "1px dashed red";
+    t.innerHTML = multipleTable(multiples(20));
+}
+</script>
+
+<p>
+<form name="showMultiple">
+    <input name="numIn" type="number" size="4">
+    <input type="button" value="Get Multiples" onClick="result1();">
+</form>
+</p>
+
+<div id="multiShow"></div>
+
+<br>
+<br>
+<br>
+<script type="text/javascript">
+
+document.write('<p><b><i>Reference:</i></b></br>')
+document.write('http://eddmann.com/posts/ten-ways-to-reverse-a-string-in-javascript/<br>')
+document.write('https://stackoverflow.com/questions/9549595/create-html-table-from-javascript-array</p>')
+
+</script>
+
+</body>
+</html>
