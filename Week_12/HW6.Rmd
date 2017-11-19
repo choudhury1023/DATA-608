@@ -1,0 +1,44 @@
+---
+title: "DATA 608 HW 6"
+author: "Ahsanul Choudhury"
+date: "November 17, 2017"
+output:
+  html_document:
+     theme: cerulean
+     toc: true
+     toc_float:
+       collapsed: false
+       smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r load_libraries, echo=TRUE, , results=FALSE, warning=FALSE}
+if (!require('readxl')) install.packages('readxl')
+if (!require('httr')) install.packages('httr')
+```
+
+Data source : https://ucr.fbi.gov/hate-crime/2016/tables/table-11
+
+Data was uploded to github from the source
+
+```{r load_data, echo=TRUE}
+#Download and read data
+url <- "https://github.com/choudhury1023/DATA-608/raw/master/Week_12/table_11_offenses_offense_type_by_participating_state_2016.xls"
+GET(url, write_disk("hw6.xls", overwrite=TRUE))
+hw6 <- read_excel("hw6.xls")
+
+#Data Cleanup and manipulation
+hw6 <- hw6[ ,-c(3:17)]
+hw6 <- hw6[-c(1:6, 57:60), ]
+colnames(hw6) <- c("state","hate crimes")
+hw6$code <- c("AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY")
+write.csv(hw6, "hw6.csv")
+head(hw6, 20)
+
+#Cleaned data was uploaded to github again for Java Script visualization
+```

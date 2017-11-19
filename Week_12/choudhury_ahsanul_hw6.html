@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+    <head>
+      <title>DATA 608 HW6</title></head>
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+
+<body>
+  <h1>Total Number of Hate Crimes Reported by States in 2016</h1>
+  <h2>Ahsanul Choudhury</h2>
+  <script type="text/javascript">
+  document.write('Hoover over the map to see total number of Hate Crimes reported in each State in 2016 </br>')
+  </script>
+
+  <div id="myDiv"></div>
+  <script >
+    Plotly.d3.csv('https://raw.githubusercontent.com/choudhury1023/DATA-608/master/Week_12/hw6.csv', function(err, rows){
+          function unpack(rows, key) {
+              return rows.map(function(row) { return row[key]; });
+          }
+
+          var data = [{
+              type: 'choropleth',
+              locationmode: 'USA-states',
+              locations: unpack(rows, 'code'),
+              z: unpack(rows, 'hate crimes'),
+              text: unpack(rows, 'state'),
+              zmin: 0,
+              zmax: 1200,
+              colorscale: [
+                  [0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'],
+                  [0.4, 'rgb(188,189,220)'], [0.6, 'rgb(158,154,200)'],
+                  [0.8, 'rgb(117,107,177)'], [1, 'rgb(84,39,143)']
+              ],
+              colorbar: {
+                  title: 'Total Hate Crimes Reported',
+                  thickness: 0.2
+              },
+              marker: {
+                  line:{
+                      color: 'rgb(255,255,255)',
+                      width: 2
+                  }
+              }
+          }];
+
+
+          var layout = {
+              title: '2016 US Hate Crimes by States',
+              geo:{
+                  scope: 'usa',
+                  showlakes: true,
+                  lakecolor: 'rgb(255,255,255)'
+              }
+          };
+
+          Plotly.plot(myDiv, data, layout, {showLink: false});
+    });
+    </script>
+
+    <script type="text/javascript">
+    document.write('Source:<a href="url">https://ucr.fbi.gov/hate-crime/2016/tables/table-11</a></br>')
+    document.write('Note: 2016 Number of Hate Crimes Reported for Hawaii was unavailable')
+    </script>
+
+    <br>
+    <br>
+    <br>
+    <script type="text/javascript">
+    document.write('<p><b><i>Reference:</i></b></br>')
+    document.write('https://plot.ly/javascript/choropleth-maps/#usa-choropleth-map')
+    </script>
+
+  </body>
+</html>
